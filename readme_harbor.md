@@ -1,7 +1,3 @@
-Here is the finalized, complete `README.md` file with your author information included. You can copy and paste this directly into your repository.
-
-***
-
 # Harbor Registry: Installation & Configuration Guide
 
 This guide details how to install, configure, and manage a self-hosted Harbor image registry. It covers running Harbor in **HTTP mode** locally and exposing it via **HTTPS** using a **zrok** tunnel.
