@@ -197,10 +197,17 @@ The `obuspa` agent often needs to bind to the correct WAN interface. If you need
     ```
 2.  In the `config interface 'wan'` section, update the desired IP address or protocol.
 3.  **Restart the network service** to apply the IP change.
-4.  **Restart the `obuspa` agent** to ensure it uses the new network settings:
-    ```bash
-    /etc/init.d/obuspa restart
-    ```
+```bash
+/etc/init.d/network restart
+```
+4.  **Stop the `obuspa` agent init.d mode** to ensure that only one obuspa instance is running when running it in debug mode:
+```bash
+/etc/init.d/obuspa stop
+```
+5.  **Re-Run the `obuspa` agent in debug mode** to ensure it uses the new network settings:
+```bash
+/usr/sbin/obuspa -p -v 4 -r mqtt -i eth0.2
+```
 
 ## Resetting the Agent Database
 
