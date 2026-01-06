@@ -228,27 +228,12 @@ You should see: `genieacs-cwmp`, `genieacs-nbi`, `genieacs-fs`, `genieacs-ui`
 
 ## Step 5: Configure GenieACS
 
-### Create configuration directory
-
-```bash
-mkdir -p ~/genieacs/config
-```
-
-### Create config.json file
-
-```bash
-nano ~/genieacs/config/config.json
-```
-
-Paste the following:
+Paste the following in `~/genieacs/lib/config.json`:
 
 ```json
-{
-  "MONGODB_CONNECTION_URL": "mongodb://admin:admin@localhost:27027/genieacs?authSource=admin",
-  "CWMP_PORT": 7547,
-  "NBI_PORT": 7557,
-  "FS_PORT": 7567,
-  "UI_PORT": 3000
+MONGODB_CONNECTION_URL: {
+  type: "string",
+  default: "mongodb://admin:admin@localhost:27027/genieacs?authSource=admin",
 }
 ```
 
