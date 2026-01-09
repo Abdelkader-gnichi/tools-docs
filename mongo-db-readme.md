@@ -1,0 +1,1 @@
+mongodb://admin:admin123@localhost:27017/controller?authSource=admin&directConnection=true
