@@ -1,0 +1,287 @@
+config defaults
+	option syn_flood '1'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+
+config zone
+	option name 'lan'
+	list network 'lan'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+	option cwmp_natiface_instance '1'
+
+config zone
+	option name 'wan'
+	list network 'wan'
+	list network 'wan6'
+	option input 'REJECT'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+	option masq '1'
+	option mtu_fix '1'
+	option cwmp_natiface_instance '2'
+
+config forwarding
+	option src 'lan'
+	option dest 'wan'
+
+config rule
+	option name 'Allow-DHCP-Renew'
+	option src 'wan'
+	option proto 'udp'
+	option dest_port '68'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '1'
+
+config rule
+	option name 'Allow-Ping'
+	option src 'wan'
+	option proto 'icmp'
+	option icmp_type 'echo-request'
+	option family 'ipv4'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '2'
+
+config rule
+	option name 'Allow-IGMP'
+	option src 'wan'
+	option proto 'igmp'
+	option family 'ipv4'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '3'
+
+config rule
+	option name 'Allow-DHCPv6'
+	option src 'wan'
+	option proto 'udp'
+	option dest_port '546'
+	option family 'ipv6'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '4'
+
+config rule
+	option name 'Allow-MLD'
+	option src 'wan'
+	option proto 'icmp'
+	option src_ip 'fe80::/10'
+	list icmp_type '130/0'
+	list icmp_type '131/0'
+	list icmp_type '132/0'
+	list icmp_type '143/0'
+	option family 'ipv6'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '5'
+
+config rule
+	option name 'Allow-ICMPv6-Input'
+	option src 'wan'
+	option proto 'icmp'
+	list icmp_type 'echo-request'
+	list icmp_type 'echo-reply'
+	list icmp_type 'destination-unreachable'
+	list icmp_type 'packet-too-big'
+	list icmp_type 'time-exceeded'
+	list icmp_type 'bad-header'
+	list icmp_type 'unknown-header-type'
+	list icmp_type 'router-solicitation'
+	list icmp_type 'neighbour-solicitation'
+	list icmp_type 'router-advertisement'
+	list icmp_type 'neighbour-advertisement'
+	option limit '1000/sec'
+	option family 'ipv6'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '6'
+
+config rule
+	option name 'Allow-ICMPv6-Forward'
+	option src 'wan'
+	option dest '*'
+	option proto 'icmp'
+	list icmp_type 'echo-request'
+	list icmp_type 'echo-reply'
+	list icmp_type 'destination-unreachable'
+	list icmp_type 'packet-too-big'
+	list icmp_type 'time-exceeded'
+	list icmp_type 'bad-header'
+	list icmp_type 'unknown-header-type'
+	option limit '1000/sec'
+	option family 'ipv6'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '7'
+
+config rule
+	option name 'Allow-IPSec-ESP'
+	option src 'wan'
+	option dest 'lan'
+	option proto 'esp'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '8'
+
+config rule
+	option name 'Allow-ISAKMP'
+	option src 'wan'
+	option dest 'lan'
+	option dest_port '500'
+	option proto 'udp'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '9'
+
+config rule
+	option name 'Allow-SSH-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '22'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '10'
+
+config rule
+	option name 'Allow-TR069'
+	option src 'wan'
+	option dest_port '7547'
+	option proto 'tcp'
+	option target 'ACCEPT'
+	option cwmp_FirewallChainRule_instance '11'
+
+# ANOMALY 1: Telnet exposed on WAN (insecure protocol)
+config rule
+	option name 'Allow-Telnet-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '23'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '12'
+
+# ANOMALY 2: FTP exposed on WAN (insecure protocol)
+config rule
+	option name 'Allow-FTP-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '21'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '13'
+
+# ANOMALY 3: HTTP management interface exposed
+config rule
+	option name 'Allow-HTTP-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '80'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '14'
+
+# ANOMALY 4: SMB/CIFS exposed (file sharing)
+config rule
+	option name 'Allow-SMB-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '445'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '15'
+
+# ANOMALY 5: RDP exposed without rate limiting
+config rule
+	option name 'Allow-RDP-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '3389'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '16'
+
+# ANOMALY 6: VNC exposed on WAN
+config rule
+	option name 'Allow-VNC-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '5900'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '17'
+
+# ANOMALY 8: MySQL/MariaDB exposed
+config rule
+	option name 'Allow-MySQL-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '3306'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '18'
+
+# ANOMALY 9: PostgreSQL exposed
+config rule
+	option name 'Allow-PostgreSQL-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '5432'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '19'
+
+# ANOMALY 10: Redis exposed without authentication requirement
+config rule
+	option name 'Allow-Redis-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '6379'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '20'
+
+# ANOMALY 11: MongoDB exposed
+config rule
+	option name 'Allow-MongoDB-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '27017'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '21'
+
+# ANOMALY 12: Elasticsearch exposed
+config rule
+	option name 'Allow-Elasticsearch-WAN'
+	option src 'wan'
+	option proto 'tcp'
+	option dest_port '9200'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '22'
+
+# ANOMALY 13: SNMP exposed (information disclosure)
+config rule
+	option name 'Allow-SNMP-WAN'
+	option src 'wan'
+	option proto 'udp'
+	option dest_port '161'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '23'
+
+# ANOMALY 14: DNS server exposed (potential for DDoS amplification)
+config rule
+	option name 'Allow-DNS-WAN'
+	option src 'wan'
+	option proto 'udp'
+	option dest_port '53'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '24'
+
+# ANOMALY 15: TFTP exposed (insecure file transfer)
+config rule
+	option name 'Allow-TFTP-WAN'
+	option src 'wan'
+	option proto 'udp'
+	option dest_port '69'
+	option target 'ACCEPT'
+	option family 'ipv4'
+	option cwmp_FirewallChainRule_instance '25'

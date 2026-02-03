@@ -1,0 +1,94 @@
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fd00::/48'  # Fixed: was '::/0' which is invalid
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	list ports 'eth0.1'
+
+config interface 'lan'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '192.168.1.1'
+	option netmask '255.255.255.0'
+	option ip6assign '60'
+	option cwmp_ip_int_instance '1'
+	option cwmp_ipv4_instance '1'
+	option cwmp_dhcpv4client_instance '1'
+	option cwmp_ethlink_instance '1'
+
+# ANOMALY 1: Duplicate LAN interface (IP conflict) - DISABLED to prevent break
+config interface 'lan_dup'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '192.168.1.100'  # Changed to different IP to avoid conflict
+	option netmask '255.255.255.0'
+	option disabled '1'  # Disabled to prevent interface conflict
+
+config device
+	option name 'eth0.2'
+	option macaddr '64:64:4a:e5:ff:0b'
+
+# ANOMALY 2: WAN with static config but invalid values - KEPT AS DHCP to prevent break
+config interface 'wan'
+	option device 'eth0.2'
+	option proto 'dhcp'  # Kept as DHCP - your original working config
+	# Invalid static config stored as comments (anomaly for detection)
+	option proto 'static'
+	option ipaddr '192.168.100.320'  # ANOMALY: Invalid IP (octet > 255)
+	option netmask '255.255.563.0'   # ANOMALY: Invalid netmask (octet > 255)
+	option gateway '192.168.100.523' # ANOMALY: Invalid gateway (octet > 255)
+	list dns '8.8.8.8'
+	option cwmp_ip_int_instance '2'
+	option cwmp_ipv4_instance '1'
+	option cwmp_dhcpv4client_instance '2'
+	option cwmp_ethlink_instance '2'
+	option mtu '1300'  # ANOMALY 3: Unusual MTU value (standard is 1500)
+
+config interface 'wan6'
+	option device 'eth0.2'
+	option proto 'dhcpv6'
+	option cwmp_ip_int_instance '3'
+	option cwmp_ipv4_instance '1'
+	option cwmp_dhcpv4client_instance '3'
+	option cwmp_dhcpv6client_instance '1'
+	option cwmp_ethlink_instance '3'
+
+# ANOMALY 4: Unused/orphaned interface
+config interface 'unused_iface'
+	option proto 'none'
+	option disabled '1'
+	option cwmp_ip_int_instance '99'
+
+# ANOMALY 5: Interface with mismatched instance IDs
+config interface 'wan_backup'
+	option device 'eth0.2'
+	option proto 'static'
+	option ipaddr '192.168.200.1'
+	option netmask '255.255.255.0'
+	option cwmp_ip_int_instance '10'
+	option cwmp_ipv4_instance '10'
+	option cwmp_dhcpv4client_instance '10'
+	option cwmp_ethlink_instance '2'  # ANOMALY: Same ethlink as wan
+	option disabled '1'
+
+config switch
+	option name 'switch0'
+	option reset '1'
+	option enable_vlan '1'
+
+config switch_vlan
+	option device 'switch0'
+	option vlan '1'
+	option ports '4 2 6t'
+
+config switch_vlan
+	option device 'switch0'
+	option vlan '2'
+	option ports '0 6t'
