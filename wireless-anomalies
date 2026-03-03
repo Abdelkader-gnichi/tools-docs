@@ -1,0 +1,35 @@
+config wifi-device 'radio0'
+        option type 'mac80211'
+        option path 'platform/10300000.wmac'
+        option band '2g'
+        option htmode 'VHT80'              # ... INVALID: VHT is not supported on 2.4 GHz
+        option cwmp_radio_instance '1'
+        option channel '17'                # ...... Potentially invalid depending on country
+
+config wifi-iface 'default_radio0'
+        option device 'radio0'
+        option network 'lan'
+        option mode 'ap'                  # ... WRONG: should be 'ap'
+        option encryption 'none'
+        option cwmp_ssid_instance '1'
+        option cwmp_access_pt_instance '1'
+        option cwmp_ssid_alias 'cpe-1'
+        option ssid 'Ooredoo_1'
+
+config wifi-device 'radio1'
+        option type 'mac80211'
+        option path 'pci0000:00/0000:00:00.0/0000:01:00.0'
+        option band '5g'
+        option htmode 'HT20'                # ... WRONG: reduces capability, inconsistent with 5G AP
+        option cwmp_radio_instance '2'
+        option channel '7'                # ... INVALID: not allowed with HT20/VHT in many regions
+        option country 'US'                 # ... WRONG: conflicts with regulatory domain (TN)
+
+config wifi-iface
+        option cwmp_ssid_instance '2'
+        option network 'lan'
+        option cwmp_ssid_alias 'cpe-2'
+        option ssid 'HexaByte'
+        option device 'radio3'              # ... WRONG: device does not exist
+        option cwmp_access_pt_instance '2'
+        option mode 'ap'
